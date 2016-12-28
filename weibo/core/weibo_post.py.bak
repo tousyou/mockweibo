@@ -1,0 +1,50 @@
+import time
+import re
+import json
+from logger import logger
+
+class WeiboPost(object):
+    def __init__(self, session, uid):
+        super(WeiboPost, self).__init__()
+        self.session = session
+        self.uid = str(uid)
+        self.Referer = "http://www.weibo.com/u/%s/home?wvr=5" % self.uid
+    
+    def post_weibo(self, text):
+        mid = ""
+
+        print 'post_weibo text,',text
+        data = {
+            "location": "v6_content_home",
+            "appkey": "",
+            "style_type": "1",
+            "pic_id": '',
+            "text": text,
+            "pdetail": "",
+            "rank": "0",
+            "rankid": "",
+            "module": "stissue",
+            "pub_type": "dialog",
+            "_t": "0",
+        }
+        
+        try:
+            resp = self.session.post('http://www.weibo.com/aj/mblog/add?ajwvr=6&__rnd=%d' % int(time.time() * 1000), data=data)
+            print 'post_weibo text,',text
+            print "resp.text: ",resp.text.encode('utf-8')
+            print "resp.code: ",resp.status_code
+            hjson = json.loads(resp.text,'utf-8')
+            #print "code: ",hjson['code']
+            if hjson['code'] == "100000":
+                a = resp.text.replace('\\"','"')
+                pattern = re.compile("mid=\"(\d*)\"  action-type=")
+                res = pattern.search(a).groups()
+                mid = res[0]
+                logger.info("success")
+                logger.info("weibo [%s] send success, mid [%s]" %
+                        (str(text),mid))
+        except Exception as e:
+            logger.debug(e)
+            logger.info( "weibo [%s] send failed" % str(text) )
+        return mid        
+ 
