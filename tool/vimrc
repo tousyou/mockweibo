@@ -1,0 +1,303 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" user interface 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if has("gui_running")
+    set go-=T               " guioption :remove the toolbar
+"   set go-=m               " :remove the menu
+
+    " maximize gvim window when opening
+    if has("win32")
+        au GUIEnter * simalt ~x
+    endif
+    if has("unix")
+        au GUIEnter * set lines=999 co=999
+    endif
+endif
+
+" set font
+if has("unix")
+    set guifont=Bitstream\ Vera\ Sans\ Mono\ 12
+endif
+if has("win32")
+    set guifont=Bitstream_Vera_Sans_Mono:h12:cANSI
+    set gfw=幼圆:h12:cGB2312
+endif
+
+"解决菜单乱码  
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+"解决consle输出乱码  
+language messages zh_CN.utf-8
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" general 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set colorcolumn=80
+set ruler
+set nocp                    " nocompatible :get rid of vi-compatible
+set sc                      " showcmd :show command in the last line of screen
+set smd                     " showmode :show what mode it is now(Insert, Replace or Visual)
+set history=400             " cmdline-history :how many cmd history to remember
+
+"set mouse=a                 " :always show the mouse
+
+set so=2                    " scrolloff :7 lines to keep above and below the cursor
+set nu                      " number :show line number
+set cul                     " cursorline :hightlight currentline
+
+set tw=0                    " textwidth :don't auto break a line
+
+set bs=2                    " backspace :so you can use backspace to delete everything
+"set ww+=h,l                 " whichwrap :so you can use h/l to move to the previous/next line 
+
+""" restore cursor to file position in previous editing session
+au BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|else|exe "norm $"|endif|endif
+
+""" no errorbells
+set noeb                    " noerrorbells
+set novb                    " novisualbell
+set t_vb=
+
+""" set mapleader
+let mapleader=","
+let g:mapleader=","
+
+""" some fast way
+map <leader>s :source ~/.vimrc<cr>                  " fast reloading of the .vimrc
+map <leader>e :e! ~/.vimrc<cr>                      " fast editing of .vimrc
+autocmd! bufwritepost .vimrc source ~/.vimrc            " when vimrc is edited, reload it
+autocmd! bufwritepost yerik_night.vim :colo yerik_night " when colorfile is edited, reload it
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" hightlight 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syntax on                   " syntax-highlighting :turn on syntax hightlighting
+" colo yerik_night            " colorscheme :my color scheme
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" file 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"set enc=utf-8               " encoding
+set fencs=utf-8,chinese,ucs-bom,gb18030,gbk,gb2312,cp936     " fileencodings
+"set ffs=unix,dos           " fileformats :auto select end-of-line formats 
+set ar                      " autoread :auto read a file when it's changed outside 
+set nobk                    " nobackup :don't make a backup before overwriting a file
+set noswf                   " noswapfile :don't use a swapfile for the buffer
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" filetype 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+filetype indent plugin on
+""" set indent length for html like files
+au FileType html,xhtml,xml setl ts=2
+au FileType html,xhtml,xml setl sts=2
+au FileType html,xhtml,xml setl sw=2
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" search 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set hls                     " hlsearch :highlight search
+set is                      " incsearch :increase search
+set ic                      " ignorecase :ignore case when searching
+set scs                     " smartcase :if has upper case, ignore 'ignorecase' option
+
+map <leader>h *N            " <leader>h to highlight all word the same to which under cursor
+
+" basically you press * or # to search for the current selection !! Really useful
+vnoremap <silent> * :call VisualSearch('f')<CR>
+vnoremap <silent> # :call VisualSearch('b')<CR>
+function! VisualSearch(direction) range
+  let l:saved_reg = @"
+  execute "normal! vgvy"
+  let l:pattern = escape(@", '\\/.*$^~[]')
+  let l:pattern = substitute(l:pattern, "\n$", "", "")
+  if a:direction == 'b'
+    execute "normal ?" . l:pattern . "^M"
+  else
+    execute "normal /" . l:pattern . "^M"
+  endif
+  let @/ = l:pattern
+  let @" = l:saved_reg
+endfunction
+
+"map <space> :nohl<CR>       " :press <space> to clear hightlight search highlight
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" status line 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set ls=2                    " laststatus :always show status line
+
+" statusline :display useful information on status line
+set stl=\ [%F%m%r%h\%w]             " file path and some tags
+set stl+=[%{getcwd()}]              " current directory
+set stl+=%=                         " right alien
+set stl+=\ \|\ %{&ff}               " file format
+set stl+=\ \|\ %{&fenc}             " file encoding
+set stl+=\ \|\ %l/%L:%c             " cursor position
+set stl+=\ \|\ %P\                  " percentage
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" programming 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" indent
+set ai                      " autoindent
+set si                      " smartindent
+set cin                     " cindent
+set sta                     " smarttab
+set et                    " noexpandtab :don't expand tab
+""" tab width
+set ts=4                    " tabstop
+set sts=4                   " softtabstop
+set sw=4                  " shiftwidth
+set tw=80
+
+""" show tab as '|'
+"set listchars=tab:\|\
+"set list
+
+""" nicer foldtext
+set foldtext=MyFoldtext()
+function! MyFoldtext()
+    let line = getline(v:foldstart)
+    let level = v:foldlevel
+    let i = 1
+    while i < level
+        let line = '   ' . line
+        let i = i + 1
+    endwhile
+    let num = v:foldend - v:foldstart
+    let line = line . '------' . num . ' lines'
+    return line
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" hot keys 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" move between spilt views using CTRL-j,k,h,l
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+""" move lines of text using ALT-j,k,h,l
+"nmap <M-j> mz:m+<cr>`z
+"nmap <M-k> mz:m-2<cr>`z
+"vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+"vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
+
+""" select, copy, cut, paste
+"map <C-a> ggVG
+"map <C-c> "+y
+"map <C-x> "+x
+"if has("gui_running")
+"    map <C-v> "+gP
+"endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" auto complete 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" command line
+set wildmenu
+set wildmode=longest:full
+
+""" text
+set completeopt=menu,longest,preview
+set pumheight=15
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" for TOhtml 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"let html_number_lines=0         " do not contain line numbers
+"let html_ignore_folding=1       " open closed folds
+"let html_use_css=1              " use css for attributes
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" for blog 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"map <leader>blog :set filetype=html<CR>:cd e:\night\blog<CR>:0r blog.html<CR>
+
+""""""""""""""""""""""""""""plugins""""""""""""""""""""""""""""""""""""""""""""
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" html.vim 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" tabbar.vim : 1338 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"let g:did_tabbar_syntax_inits = 1
+"highlight def link Tb_Normal         normal
+"highlight def link Tb_Changed        preproc
+"highlight def link Tb_VisibleNormal  type
+"highlight def link Tb_VisibleChanged type
+
+"map <C-F4> <ESC>:call CloseTab()<CR>
+"func! CloseTab()
+"    let s:buf_nr = bufnr("%")
+"    echo s:buf_nr
+"endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" NERD_commenter.vim : 1218 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" using <leader>c<space> is enough
+"let NERDSpaceDelims=1
+"let NERD_c_alt_style=1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" a.vim : 31 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" using :A to switch between c/h files
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" matchit.vim : 39 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" using % to match for HTML, LaTeX, and many other languages  
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" VisLncr.vim : 670 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" first visual select then use :I [#] to produce increasing/decreasing numbers
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" snipMate.vim : 2540 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" use tab to use snippet
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" winmanager
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"let g:winManagerWindowLayout='FileExplorer|TagList'
+"nmap wm :WMToggle<cr>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" minibufexplorer
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:miniBufExplMapCTabSwitchBufs=1
+let g:miniBufExplMapWindowNavArrows=1
+"let g:miniBufExplorerMoreThanOne=1
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" taglist.vim : 273 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"let Tlist_Show_One_File=1
+"let Tlist_Exit_OnlyWindow=1
+"let Tlist_Display_Tag_Scope=1
+"let Tlist_Enable_Fold_Column=0
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" trinity.vim : 2347 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Open and close all the three plugins on the same time
+"nmap <F8> :TrinityToggleAll<CR>
+" Open and close the srcexpl.vim separately
+"nmap <F9> :TrinityToggleSourceExplorer<CR>
+" Open and close the taglist.vim separately
+"nmap <F10> :TrinityToggleTagList<CR>
+" Open and close the NERD_tree.vim separately
+"nmap <F11> :TrinityToggleNERDTree<CR>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" supertab.vim : 1643 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"let g:SuperTabLongestHighlight=1
+"let g:SuperTabDefaultCompletionType="<C-x><C-p>"

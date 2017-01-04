@@ -1,0 +1,29 @@
+FROM centos:latest
+MAINTAINER ritousyou@outlook.com
+
+RUN yum install -y rpm*
+RUN yum install -y gcc*
+RUN yum install -y subversion
+RUN yum install -y wget
+RUN yum install -y curl*
+RUN yum install -y make.x86_64
+RUN yum install -y ncurses.x86_64
+RUN yum install -y ncurses-devel.x86_64
+RUN yum install -y mysql mysql-devel
+
+RUN wget http://10.210.208.36/rpms-ad/feed-test/vim-7.4.tar.bz2 && tar -jxvf vim-7.4.tar.bz2 && cd vim74 && ./configure && make && make install && cd .. && rm -rf vim*
+
+RUN rpm -ivh http://10.210.208.36/rpms-ad/feed-test/gtest-1.0.0-1.x86_64.rpm
+RUN wget http://10.210.208.36/rpms-ad/feed-test/scons-2.3.0-1.noarch.rpm
+RUN rpm -ivh scons-2.3.0-1.noarch.rpm
+RUN rm -rf scons-2.3.0-1.noarch.rpm
+
+RUN wget http://10.210.208.36/rpms-ad/feed-test/rpm_create
+RUN mv rpm_create /usr/local/bin
+
+#RUN rpm -ivh http://10.210.208.36/rpms-ad/feed-release/sconstool-2.0.0-1.x86_64.rpm
+
+RUN echo 'export PS1="\[\e[01;32m\][\[\e[34m\]\u\[\e[32m\]@\H\[\e[34m\]\w\[\e[32m\]]\n:)\[\e[00m\]"' >> /root/.bashrc
+RUN echo 'export PATH=$PATH:/sbin:/usr/local/bin:/home/w/share/sconstool/bin:/home/w/lib64:/home/w/lib' >> /root/.bashrc
+RUN wget http://10.210.208.36/rpms-ad/cpm-test/vimrc && mv vimrc /root/.vimrc
+RUN wget http://10.210.208.36/rpms-ad/cpm-test/diffwrap.sh && mkdir -p /root/scripts && mv diffwrap.sh /root/scripts
